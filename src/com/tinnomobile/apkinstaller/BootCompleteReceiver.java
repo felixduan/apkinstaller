@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.util.Log;
 
 public class BootCompleteReceiver extends BroadcastReceiver {
-    private static final String TAG = "BootCompleteReceiver";
+    private static final String TAG = "TinnoApkInstaller";
 
     @Override
     public void onReceive(Context context, Intent bootintent) {

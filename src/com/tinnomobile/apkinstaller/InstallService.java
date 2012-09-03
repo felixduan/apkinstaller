@@ -16,7 +16,7 @@ public class InstallService extends Service {
 
     private static final String DEFAULT = "default";
     private static final String FIRST_BOOT = "first_boot";
-    private final String TAG = "InstallService";
+    private static final String TAG = "TinnoApkInstaller";
     private PackageInstallObserver obs;
     private PackageManager pkgManager;
     private SharedPreferences sp;
@@ -24,14 +24,12 @@ public class InstallService extends Service {
 
     @Override
     public IBinder onBind(Intent arg0) {
-        // TODO Auto-generated method stub
         log("onBind");
         return null;
     }
 
     @Override
     public void onCreate() {
-        // TODO Auto-generated method stub
         log("onCreate");
         super.onCreate();
         obs = new PackageInstallObserver();
@@ -42,7 +40,6 @@ public class InstallService extends Service {
 
     @Override
     public void onDestroy() {
-        // TODO Auto-generated method stub
         log("onDestroy");
         super.onDestroy();
     }
@@ -54,19 +51,22 @@ public class InstallService extends Service {
         super.onStart(intent, startId);
         log("onStart bFirstBoot = " + bFirstBoot);
         if (bFirstBoot)
-            installDemoApk();
+            installApk();
         else
             stopSelf();
     }
 
-    private void installDemoApk() {
-
-        log("installDemoApk()");
-        File apkFile = new File("/system/apksToInstall//Adobe.Flash.11.1.112.61.apk");
-        pkgManager.installPackage(Uri.fromFile(apkFile),
-                obs,
-                PackageManager.INSTALL_REPLACE_EXISTING,
-                null);
+    private void installApk() {
+        File apkFile = new File("/system/apksToInstall/Adobe.Flash.11.1.112.61.apk");
+        if (apkFile.exists()) {
+            log("installApk() apkFile = " + apkFile.getAbsolutePath());
+            pkgManager.installPackage(Uri.fromFile(apkFile),
+                    obs,
+                    PackageManager.INSTALL_REPLACE_EXISTING,
+                    null);
+        } else {
+            log("installApk() apkFile NOT exists: " + apkFile.getAbsolutePath());            
+        }
     }
 
     class PackageInstallObserver extends IPackageInstallObserver.Stub {
