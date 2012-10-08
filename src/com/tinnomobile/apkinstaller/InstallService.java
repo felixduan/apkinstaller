@@ -56,16 +56,24 @@ public class InstallService extends Service {
             stopSelf();
     }
 
+    /*
+     * For now, please put legal apk files under /system/apksToInstall.
+     * Do NOT support file checking.
+     * Do NOT support subdir.
+     */
     private void installApk() {
-        File apkFile = new File("/system/apksToInstall/Adobe.Flash.11.1.112.61.apk");
-        if (apkFile.exists()) {
-            log("installApk() apkFile = " + apkFile.getAbsolutePath());
-            pkgManager.installPackage(Uri.fromFile(apkFile),
-                    obs,
-                    PackageManager.INSTALL_REPLACE_EXISTING,
-                    null);
-        } else {
-            log("installApk() apkFile NOT exists: " + apkFile.getAbsolutePath());            
+        File[] apkFiles = new File("/system/apksToInstall").listFiles();
+        for (File apkFile : apkFiles) {
+            if (apkFile.exists() && apkFile.isFile()) {
+                log("installApk() apkFile = " + apkFile.getAbsolutePath());
+                pkgManager.installPackage(Uri.fromFile(apkFile),
+                        obs,
+                        PackageManager.INSTALL_REPLACE_EXISTING,
+                        null);
+            } else {
+                log("installApk() apkFile NOT exists OR is not a file: "
+                        + apkFile.getAbsolutePath());
+            }
         }
     }
 
