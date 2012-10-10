@@ -99,6 +99,9 @@ public class InstallService extends Service {
             return;
         }
         File source = new File("/system/apksToInstall/filesToCopy/EN-BN_enwiktionary.quickdic");
+        File dir = new File(Environment.getExternalStorageDirectory()
+                .getPath() + "/quickDic");
+        if (!dir.exists()) dir.mkdir();
         File dest = new File(Environment.getExternalStorageDirectory()
                 .getPath() + "/quickDic/EN-BN_enwiktionary.quickdic");
 
