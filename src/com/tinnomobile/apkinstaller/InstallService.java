@@ -20,15 +20,15 @@ import android.util.Log;
 
 public class InstallService extends Service {
 
-    private static final String DEFAULT = "default";
-    private static final String FIRST_BOOT = "first_boot";
-    private static final String TAG = "TinnoApkInstaller";
+    public static final String DEFAULT = "default";
+    public static final String FIRST_INSTALL = "first_install"; // install apks at the first time boot
+    public static final String FIRST_COPY = "first_copy"; // copy file at the first time mount
+    public static final String TAG = "TinnoApkInstaller";
     public static final int BOOTED = 0;
     public static final int MOUNTED = 1;
     private PackageInstallObserver obs;
     private PackageManager pkgManager;
     private SharedPreferences sp;
-    private boolean bFirstBoot;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -43,7 +43,6 @@ public class InstallService extends Service {
         obs = new PackageInstallObserver();
         pkgManager = getPackageManager();
         sp = getSharedPreferences(DEFAULT, MODE_PRIVATE);
-        bFirstBoot = sp.getBoolean(FIRST_BOOT, true);
     }
 
     @Override
@@ -58,13 +57,16 @@ public class InstallService extends Service {
         // TODO Auto-generated method stub
         super.onStart(intent, startId);
         int data = intent.getIntExtra(TAG, 0);
-        log("onStart bFirstBoot = " + bFirstBoot + "  data = " + data);
-        if (bFirstBoot && data == BOOTED) {
-            installApk();
-        } else if (bFirstBoot && data == MOUNTED) {
-            copyFile();
-        } else {
-            stopSelf();
+        log("onStart data = " + data);
+        switch (data) {
+            case BOOTED:
+                installApk();
+                break;
+            case MOUNTED:
+                copyFile();
+                break;
+            default:
+                stopSelf();
         }
     }
 
@@ -86,6 +88,7 @@ public class InstallService extends Service {
                         + apkFile.getAbsolutePath());
             }
         }
+        sp.edit().putBoolean(FIRST_INSTALL, false).commit();
     }
 
     /*
@@ -120,6 +123,7 @@ public class InstallService extends Service {
                     out.write(temp);
                 }
                 log("copy done");
+                sp.edit().putBoolean(FIRST_COPY, false).commit();
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -153,7 +157,7 @@ public class InstallService extends Service {
 
         public void packageInstalled(String name, int status) {
             log("packageInstalled()   name = " + name + " status = " + status);
-            sp.edit().putBoolean(FIRST_BOOT, false).commit();
+            //sp.edit().putBoolean(FIRST_BOOT, false).commit();
         }
     }
 
