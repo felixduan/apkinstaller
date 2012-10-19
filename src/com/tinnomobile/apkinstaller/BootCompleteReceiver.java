@@ -24,12 +24,15 @@ public class BootCompleteReceiver extends BroadcastReceiver {
             mServiceIntent.setAction("com.tinnomobile.apkinstaller.InstallService");
             mServiceIntent.putExtra(InstallService.TAG, InstallService.BOOTED);
             context.startService(mServiceIntent);
-        } else if (bFirstCopy && bootintent.getAction().equals(Intent.ACTION_MEDIA_MOUNTED)) {
-            Intent mServiceIntent = new Intent();
-            mServiceIntent.setAction("com.tinnomobile.apkinstaller.InstallService");
-            mServiceIntent.putExtra(InstallService.TAG, InstallService.MOUNTED);
-            context.startService(mServiceIntent);
         }
+        /*
+         * else if (bFirstCopy &&
+         * bootintent.getAction().equals(Intent.ACTION_MEDIA_MOUNTED)) { Intent
+         * mServiceIntent = new Intent();
+         * mServiceIntent.setAction("com.tinnomobile.apkinstaller.InstallService"
+         * ); mServiceIntent.putExtra(InstallService.TAG,
+         * InstallService.MOUNTED); context.startService(mServiceIntent); }
+         */
         log("onReceive done");
     }
 
