@@ -1,0 +1,20 @@
+*********************  ApkInstaller *****************
+	An apk used to install other apks & copy certain
+files to certain destination after every factory reset.
+These apk you may remove, show up after  the next factory
+reset.
+
+	You may feel confuse when you come to the key lines.
+The reason is I work for a phone device company, so we
+mess up with the system partition. :)
+
+	The biggest problem comes to me, which still not
+sure I fixed it, is NP exception occures onStartCommand().
+You can see this from git log.
+
+	This is my first github project. I may not update
+this any more.
+
+	felix :-p
+
+-EOF-
