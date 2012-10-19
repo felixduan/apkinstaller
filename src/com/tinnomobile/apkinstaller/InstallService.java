@@ -21,8 +21,10 @@ import android.util.Log;
 public class InstallService extends Service {
 
     public static final String DEFAULT = "default";
-    public static final String FIRST_INSTALL = "first_install"; // install apks at the first time boot
-    public static final String FIRST_COPY = "first_copy"; // copy file at the first time mount
+    // install apks at the first time boot
+    public static final String FIRST_INSTALL = "first_install";
+    // copy file at the first time mount
+    public static final String FIRST_COPY = "first_copy";
     public static final String TAG = "TinnoApkInstaller";
     public static final int BOOTED = 0;
     public static final int MOUNTED = 1;
@@ -52,11 +54,15 @@ public class InstallService extends Service {
     }
 
     @Override
-    @Deprecated
-    public void onStart(Intent intent, int startId) {
-        // TODO Auto-generated method stub
-        super.onStart(intent, startId);
-        int data = intent.getIntExtra(TAG, 0);
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        int data = -1;
+        try {
+            data = intent.getIntExtra(TAG, -1);
+        } catch (Exception e) {
+            Log.e(TAG, "onStartCommand() !!!!!!!!!!!!!!! Exception e", e);
+            stopSelf();
+            return START_REDELIVER_INTENT;
+        }
         log("onStart data = " + data);
         switch (data) {
             case BOOTED:
@@ -68,6 +74,7 @@ public class InstallService extends Service {
             default:
                 stopSelf();
         }
+        return START_REDELIVER_INTENT;
     }
 
     /*
@@ -104,11 +111,18 @@ public class InstallService extends Service {
         File source = new File("/system/apksToInstall/filesToCopy/EN-BN_enwiktionary.quickdic");
         File dir = new File(Environment.getExternalStorageDirectory()
                 .getPath() + "/quickDic");
-        if (!dir.exists()) dir.mkdir();
+        if (!dir.exists())
+            dir.mkdir();
         File dest = new File(Environment.getExternalStorageDirectory()
                 .getPath() + "/quickDic/EN-BN_enwiktionary.quickdic");
 
-        if (source.exists() && !dest.exists()) {
+        if (source.exists()) {
+            log("source file NOT exists : " + source.getAbsolutePath());
+            sp.edit().putBoolean(FIRST_COPY, false).commit();
+        } else if (dest.exists()) {
+            log("dest file alreaty exists : " + dest.getAbsolutePath());
+            sp.edit().putBoolean(FIRST_COPY, false).commit();
+        } else {
             InputStream in = null;
             OutputStream out = null;
             try {
@@ -145,10 +159,7 @@ public class InstallService extends Service {
                 }
             }
 
-        } else {
-            log("file NOT exists : " + source.getAbsolutePath());
         }
-
     }
 
     class PackageInstallObserver extends IPackageInstallObserver.Stub {
@@ -157,7 +168,7 @@ public class InstallService extends Service {
 
         public void packageInstalled(String name, int status) {
             log("packageInstalled()   name = " + name + " status = " + status);
-            //sp.edit().putBoolean(FIRST_BOOT, false).commit();
+            // sp.edit().putBoolean(FIRST_BOOT, false).commit();
         }
     }
 
